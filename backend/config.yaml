@@ -1,0 +1,42 @@
+# SenRAG 配置文件
+# 可通过环境变量覆盖: LLM_BASE_URL, LLM_API_KEY, LLM_MODEL, QDRANT_HOST
+
+server:
+  host: "0.0.0.0"
+  port: 8080
+
+# LLM 配置 (支持 OpenAI 兼容接口)
+llm:
+  provider: "openai"
+  base_url: "https://api.openai.com/v1"
+  api_key: ""  # 请填写你的 API Key
+  model: "gpt-3.5-turbo"
+  max_tokens: 2000
+  temperature: 0.7
+
+# Embedder 配置
+embedder:
+  model: "text-embedding-3-small"
+  batch_size: 32
+
+# Qdrant 向量数据库配置
+qdrant:
+  host: "localhost"
+  port: 6333
+  api_key: ""  # 如果 Qdrant 启用了认证
+  use_auth: false
+  collection_name: "senrag_collection"
+
+# 上传配置
+upload:
+  max_file_size: 52428800  # 50MB
+  allowed_extensions:
+    - ".txt"
+    - ".md"
+    - ".pdf"
+    - ".docx"
+    - ".json"
+    - ".yaml"
+    - ".html"
+    - ".csv"
+  save_path: "./uploads"
