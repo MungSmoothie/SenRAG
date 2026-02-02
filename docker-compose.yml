@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: senrag-qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__API_KEY=${QDRANT_API_KEY:-}
+    restart: unless-stopped
+
+  senrag-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: senrag-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/config.yaml:/app/config.yaml:ro
+      - uploads_data:/app/uploads
+    environment:
+      - LLM_BASE_URL=${LLM_BASE_URL:-https://api.openai.com/v1}
+      - LLM_API_KEY=${LLM_API_KEY}
+      - LLM_MODEL=${LLM_MODEL:-gpt-3.5-turbo}
+      - QDRANT_HOST=qdrant
+      - QDRANT_API_KEY=${QDRANT_API_KEY:-}
+    depends_on:
+      - qdrant
+    restart: unless-stopped
+
+  senrag-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: senrag-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - senrag-backend
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:
+  uploads_data:
